@@ -1,0 +1,1 @@
+Idea Currency Plugin
