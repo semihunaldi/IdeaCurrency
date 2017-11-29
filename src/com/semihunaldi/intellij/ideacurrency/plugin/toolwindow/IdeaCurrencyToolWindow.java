@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
@@ -32,6 +33,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
                 prepareData();
             }
         });
+        contentPane.setBackground(JBColor.LIGHT_GRAY);
     }
 
     @Override
