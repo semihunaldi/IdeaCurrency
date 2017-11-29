@@ -5,15 +5,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBList;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.ui.table.JBTable;
+import com.semihunaldi.intellij.ideacurrency.plugin.TickerDto;
 import com.semihunaldi.intellij.ideacurrency.plugin.Util;
-import com.semihunaldi.intellij.ideacurrency.plugin.toolwindow.component.CurrencyCellRenderer;
 import org.jetbrains.annotations.NotNull;
-import org.knowm.xchange.dto.marketdata.Ticker;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -22,15 +24,19 @@ import java.util.List;
  */
 public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     private JPanel contentPane;
-    private JBList jbList;
     private JButton reloadButton;
+    private JBTable table;
+
+    private DefaultTableModel defaultTableModel;
 
     @Override
     public void init(ToolWindow window) {
+        defaultTableModel = prepareTableHeader();
         reloadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                prepareData();
+                List<TickerDto> data = getData();
+                fillData(data);
             }
         });
         contentPane.setBackground(JBColor.LIGHT_GRAY);
@@ -39,20 +45,65 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        prepareData();
+        List<TickerDto> data = getData();
+        fillData(data);
         Content content = contentFactory.createContent(contentPane, "", false);
         toolWindow.getContentManager().addContent(content);
     }
 
-    private void prepareData() {
-        Ticker ticker = Util.getTicker();
-        List<Ticker> tickers = Lists.newArrayList();
-        if(ticker != null) {
-            for(int i = 0 ; i<4 ; i++) {
-                tickers.add(ticker);
+    private List<TickerDto> getData() {
+        TickerDto tickerDto = Util.getTicker();
+        List<TickerDto> tickers = Lists.newArrayList();
+        if (tickerDto != null) {
+            for (int i = 0 ; i < 15 ; i++) {
+                tickers.add(tickerDto);
             }
-            jbList.setCellRenderer(new CurrencyCellRenderer());
-            jbList.setListData(tickers.toArray());
         }
+        return tickers;
+    }
+
+    private DefaultTableModel prepareTableHeader() {
+        DefaultTableModel defaultTableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        defaultTableModel.setColumnIdentifiers(new Object[]{"Market", "Bid", "Ask", "Currency"});
+        table.setModel(defaultTableModel);
+        return defaultTableModel;
+    }
+
+    private void fillData(List<TickerDto> tickers) {
+        //TODO clear rows
+        for (TickerDto tickerDto : tickers) {
+            List<String> columns = Lists.newArrayList();
+            columns.add(tickerDto.getExchangeName());
+            columns.add(tickerDto.getTicker().getBid().toPlainString());
+            columns.add(tickerDto.getTicker().getAsk().toPlainString());
+            columns.add(tickerDto.getTicker().getCurrencyPair().toString());
+            defaultTableModel.addRow(columns.toArray());
+        }
+    }
+
+    private void createUIComponents() {
+        table = new JBTable() {
+            @NotNull
+            @Override
+            public Component prepareRenderer(@NotNull TableCellRenderer renderer, int row, int col) {
+                Component comp = super.prepareRenderer(renderer, row, col);
+                if (col == 1) {
+                    comp.setForeground(JBColor.GREEN);
+                    comp.setBackground(JBColor.BLACK);
+                } else if (col == 2) {
+                    comp.setForeground(JBColor.RED);
+                    comp.setBackground(JBColor.BLACK);
+                } else {
+                    comp.setForeground(JBColor.BLACK);
+                    comp.setBackground(JBColor.WHITE);
+                }
+                return comp;
+            }
+        };
     }
 }

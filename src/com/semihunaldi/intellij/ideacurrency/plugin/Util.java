@@ -8,20 +8,22 @@ import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * Created by semihunaldi on 29/11/2017
  */
 public class Util {
 
-    public static Ticker getTicker() {
+    public static TickerDto getTicker() {
         Exchange bitstamp = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
         MarketDataService marketDataService = bitstamp.getMarketDataService();
         Ticker ticker = null;
         try {
-            return marketDataService.getTicker(CurrencyPair.BTC_USD);
+            return new TickerDto(bitstamp.getExchangeSpecification().getExchangeName(),marketDataService.getTicker(CurrencyPair.BTC_USD));
         } catch (IOException e) {
-            return null;
+            //TODO return null
+            return new TickerDto(bitstamp.getExchangeSpecification().getExchangeName(),new Ticker.Builder().currencyPair(CurrencyPair.BTC_USD).ask(new BigDecimal("123")).bid(new BigDecimal("4253")).build());
         }
     }
 }
