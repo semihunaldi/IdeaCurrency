@@ -1,8 +1,10 @@
 package com.semihunaldi.intellij.ideacurrency.plugin.ui.config;
 
+import com.google.common.collect.Sets;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.ui.CheckboxTree;
+import com.intellij.ui.CheckboxTreeAdapter;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.TreeSpeedSearch;
 import com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants;
@@ -10,6 +12,7 @@ import com.semihunaldi.intellij.ideacurrency.plugin.IdeaCurrencyApp;
 import com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.knowm.xchange.currency.CurrencyPair;
 
@@ -29,6 +32,8 @@ public class IdeaCurrencyConfigUI implements Configurable {
     private Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs;
     private Collection<String> availableExchangeNames;
 
+    private boolean isModified = false;
+
     public void init() {
         DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -38,6 +43,8 @@ public class IdeaCurrencyConfigUI implements Configurable {
             Collection<CurrencyPair> currencyPairs = IdeaCurrencyApp.getInstance().getCurrencyPairs(availableExchangeName);
             for (CurrencyPair currencyPair : currencyPairs) {
                 CheckedTreeNode secondChild = new CheckedTreeNode(currencyPair.toString());
+                boolean selected = isSelected(availableExchangeName, currencyPair);
+                secondChild.setChecked(selected);
                 firstChild.add(secondChild);
                 tree.expandPath(new TreePath(secondChild));
             }
@@ -46,6 +53,14 @@ public class IdeaCurrencyConfigUI implements Configurable {
         }
         model.reload();
         tree.treeDidChange();
+    }
+
+    private boolean isSelected(String exchangeName, CurrencyPair currencyPair) {
+        SelectedExchangeCurrencyPair exchangePair = getExchangePair(exchangeName);
+        if(exchangePair != null) {
+            return exchangePair.getCurrencyPairList().contains(currencyPair);
+        }
+        return false;
     }
 
     @Nls
@@ -62,15 +77,31 @@ public class IdeaCurrencyConfigUI implements Configurable {
 
     @Override
     public boolean isModified() {
-        return true;
+        return isModified;
     }
 
     @Override
     public void apply() throws ConfigurationException {
-
+        Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = Sets.newHashSet();
+        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+        while (root.depthFirstEnumeration().hasMoreElements()) {
+            DefaultMutableTreeNode exchangeNameNode = (DefaultMutableTreeNode) root.children().nextElement();
+            Set<CurrencyPair> currencyPairs = Sets.newHashSet();
+            while (exchangeNameNode.depthFirstEnumeration().hasMoreElements()) { //TODO stucks here
+                CheckedTreeNode currencyPairNode = (CheckedTreeNode) exchangeNameNode.children().nextElement();
+                if(currencyPairNode.isChecked()) {
+                    currencyPairs.add(new CurrencyPair(currencyPairNode.getUserObject().toString()));
+                }
+            }
+            SelectedExchangeCurrencyPair selectedExchangeCurrencyPair = new SelectedExchangeCurrencyPair(exchangeNameNode.getUserObject().toString(), currencyPairs);
+            selectedExchangeCurrencyPairs.add(selectedExchangeCurrencyPair);
+        }
+        IdeaCurrencyConfig.getInstance().setSelectedExchangeCurrencyPairs(selectedExchangeCurrencyPairs);
     }
 
     private void createUIComponents() {
+        isModified = false;
         selectedExchangeCurrencyPairs = IdeaCurrencyConfig.getInstance().selectedExchangeCurrencyPairs;
         availableExchangeNames = IdeaCurrencyApp.getInstance().getAvailableExchangeNames();
         tree = new CheckboxTree(new CheckboxTree.CheckboxTreeCellRenderer() {
@@ -84,6 +115,17 @@ public class IdeaCurrencyConfigUI implements Configurable {
         }, new CheckedTreeNode());
         tree.setRootVisible(false);
         new TreeSpeedSearch(tree);
+        tree.addCheckboxTreeListener(new CheckboxTreeAdapter() {
+            @Override
+            public void nodeStateChanged(@NotNull CheckedTreeNode node) {
+                isModified = true;
+            }
+        });
         init();
+    }
+
+    private SelectedExchangeCurrencyPair getExchangePair(String exchangeName) {
+        SelectedExchangeCurrencyPair selectedExchangeCurrencyPair = selectedExchangeCurrencyPairs.stream().filter(secp -> secp.getExchangeName().equals(exchangeName)).findAny().orElse(null);
+        return selectedExchangeCurrencyPair;
     }
 }
