@@ -31,4 +31,21 @@ public class SelectedExchangeCurrencyPair {
     public void setCurrencyPairList(Set<CurrencyPair> currencyPairList) {
         this.currencyPairList = currencyPairList;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        SelectedExchangeCurrencyPair that = (SelectedExchangeCurrencyPair) o;
+
+        return exchangeName != null ? exchangeName.equals(that.exchangeName) : that.exchangeName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return exchangeName != null ? exchangeName.hashCode() : 0;
+    }
 }

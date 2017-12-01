@@ -1,5 +1,6 @@
 package com.semihunaldi.intellij.ideacurrency.plugin.ui.config;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -21,6 +22,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Set;
 
 /**
@@ -57,7 +59,7 @@ public class IdeaCurrencyConfigUI implements Configurable {
 
     private boolean isSelected(String exchangeName, CurrencyPair currencyPair) {
         SelectedExchangeCurrencyPair exchangePair = getExchangePair(exchangeName);
-        if(exchangePair != null) {
+        if (exchangePair != null) {
             return exchangePair.getCurrencyPairList().contains(currencyPair);
         }
         return false;
@@ -85,19 +87,23 @@ public class IdeaCurrencyConfigUI implements Configurable {
         Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = Sets.newHashSet();
         DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-        while (root.depthFirstEnumeration().hasMoreElements()) {
-            DefaultMutableTreeNode exchangeNameNode = (DefaultMutableTreeNode) root.children().nextElement();
+        Enumeration rootEnum = root.children();
+        while (rootEnum.hasMoreElements()) {
+            DefaultMutableTreeNode rootEnumObject = (DefaultMutableTreeNode)rootEnum.nextElement();
+            String exchangeName = rootEnumObject.getUserObject().toString();
+            Enumeration childEnum = rootEnumObject.children();
             Set<CurrencyPair> currencyPairs = Sets.newHashSet();
-            while (exchangeNameNode.depthFirstEnumeration().hasMoreElements()) { //TODO stucks here
-                CheckedTreeNode currencyPairNode = (CheckedTreeNode) exchangeNameNode.children().nextElement();
-                if(currencyPairNode.isChecked()) {
-                    currencyPairs.add(new CurrencyPair(currencyPairNode.getUserObject().toString()));
+            while (childEnum.hasMoreElements()) {
+                CheckedTreeNode childEnumObject = (CheckedTreeNode)childEnum.nextElement();
+                if(childEnumObject.isChecked()) {
+                    currencyPairs.add(new CurrencyPair(childEnumObject.getUserObject().toString()));
                 }
             }
-            SelectedExchangeCurrencyPair selectedExchangeCurrencyPair = new SelectedExchangeCurrencyPair(exchangeNameNode.getUserObject().toString(), currencyPairs);
+            SelectedExchangeCurrencyPair selectedExchangeCurrencyPair = new SelectedExchangeCurrencyPair(exchangeName, currencyPairs);
             selectedExchangeCurrencyPairs.add(selectedExchangeCurrencyPair);
         }
         IdeaCurrencyConfig.getInstance().setSelectedExchangeCurrencyPairs(selectedExchangeCurrencyPairs);
+        isModified = false;
     }
 
     private void createUIComponents() {

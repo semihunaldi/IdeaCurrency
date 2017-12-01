@@ -28,7 +28,7 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceImplementation="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig"/>
+    <applicationService serviceInterface="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig" serviceImplementation="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig"/>
     <applicationConfigurable instance="com.semihunaldi.intellij.ideacurrency.plugin.ui.config.IdeaCurrencyConfigUI"/>
     <toolWindow anchor="right" id="Idea Currency" secondary="false" factoryClass="com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow.IdeaCurrencyToolWindow"/>
   </extensions>
