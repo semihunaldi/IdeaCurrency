@@ -1,5 +1,6 @@
 package com.semihunaldi.intellij.ideacurrency.plugin;
 
+import com.semihunaldi.intellij.ideacurrency.plugin.model.TickerDto;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
 import org.knowm.xchange.bitstamp.BitstampExchange;
@@ -15,7 +16,7 @@ import java.math.BigDecimal;
  */
 public class Util {
 
-    public static TickerDto getTicker() {
+    public static TickerDto getSampleTicker() {
         Exchange bitstamp = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
         MarketDataService marketDataService = bitstamp.getMarketDataService();
         Ticker ticker = null;

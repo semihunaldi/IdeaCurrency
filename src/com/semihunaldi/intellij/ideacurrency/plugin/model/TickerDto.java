@@ -1,4 +1,4 @@
-package com.semihunaldi.intellij.ideacurrency.plugin;
+package com.semihunaldi.intellij.ideacurrency.plugin.model;
 
 import org.knowm.xchange.dto.marketdata.Ticker;
 

@@ -9,8 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="xchange-bitstamp-4.3.0" level="project" />
-    <orderEntry type="library" name="xchange-core-4.3.0" level="project" />
     <orderEntry type="library" name="base64-2.3.9" level="project" />
+    <orderEntry type="library" name="xchange" level="project" />
   </component>
 </module>

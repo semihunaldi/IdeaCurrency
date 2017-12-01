@@ -1,4 +1,4 @@
-package com.semihunaldi.intellij.ideacurrency.plugin.toolwindow;
+package com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.project.Project;
@@ -8,7 +8,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
-import com.semihunaldi.intellij.ideacurrency.plugin.TickerDto;
+import com.semihunaldi.intellij.ideacurrency.plugin.model.TickerDto;
 import com.semihunaldi.intellij.ideacurrency.plugin.Util;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * Created by semihunaldi on 29/11/2017
  */
+@SuppressWarnings("Duplicates")
 public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     private JPanel contentPane;
     private JButton reloadButton;
@@ -52,7 +53,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     }
 
     private List<TickerDto> getData() {
-        TickerDto tickerDto = Util.getTicker();
+        TickerDto tickerDto = Util.getSampleTicker();
         List<TickerDto> tickers = Lists.newArrayList();
         if (tickerDto != null) {
             for (int i = 0 ; i < 15 ; i++) {

@@ -28,7 +28,9 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow anchor="right" id="Idea Currency" secondary="false" factoryClass="com.semihunaldi.intellij.ideacurrency.plugin.toolwindow.IdeaCurrencyToolWindow"/>
+    <applicationService serviceImplementation="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig"/>
+    <applicationConfigurable instance="com.semihunaldi.intellij.ideacurrency.plugin.ui.config.IdeaCurrencyConfigUI"/>
+    <toolWindow anchor="right" id="Idea Currency" secondary="false" factoryClass="com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow.IdeaCurrencyToolWindow"/>
   </extensions>
 
   <actions>
@@ -37,7 +39,7 @@
 
   <!--<application-components>-->
     <!--<component>-->
-      <!--<implementation-class>com.semihunaldi.intellij.ideacurrency.plugin.toolwindow.asd</implementation-class>-->
+      <!--<implementation-class>com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow.asd</implementation-class>-->
     <!--</component>-->
   <!--</application-components>-->
 </idea-plugin>
