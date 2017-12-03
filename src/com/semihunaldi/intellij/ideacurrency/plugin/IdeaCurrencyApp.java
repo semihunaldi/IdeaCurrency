@@ -2,14 +2,13 @@ package com.semihunaldi.intellij.ideacurrency.plugin;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.semihunaldi.intellij.ideacurrency.plugin.model.ExchangeForCurrency;
+import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.TickerDto;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class IdeaCurrencyApp {
         return ourInstance;
     }
 
-    private Map<Class<? extends Exchange>,Exchange> exchanges;
+    private Map<Class<? extends Exchange>, Exchange> exchanges;
 
     private IdeaCurrencyApp() {
         exchanges = Maps.newHashMap();
@@ -39,7 +38,7 @@ public class IdeaCurrencyApp {
     private void prepareAvailableExchanges() {
         for (Class<? extends Exchange> exchangeClass : ApplicationConstants.exchangeClasses) {
             Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClass.getName());
-            exchanges.put(exchangeClass,exchange);
+            exchanges.put(exchangeClass, exchange);
         }
     }
 
@@ -64,20 +63,25 @@ public class IdeaCurrencyApp {
         return exchanges.get(exchangeClass);
     }
 
-    public TickerDto getTicker(ExchangeForCurrency exchangeForCurrency) {
-        Exchange exchange = exchanges.get(exchangeForCurrency.getExchangeClass());
+    public TickerDto getTicker(String exchangeName, CurrencyPair pair) {
+        Exchange exchange = getExchangeByName(exchangeName);
         MarketDataService marketDataService = exchange.getMarketDataService();
         try {
-            return new TickerDto(exchange.getExchangeSpecification().getExchangeName(),marketDataService.getTicker(exchangeForCurrency.getSelectedCurrencyPair()));
-        } catch (IOException e) {
+            return new TickerDto(exchange.getExchangeSpecification().getExchangeName(), marketDataService.getTicker(pair));
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public List<TickerDto> getTickers(Collection<ExchangeForCurrency> exchangeForCurrencies) {
+    public List<TickerDto> getTickers(Collection<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs) {
         List<TickerDto> tickerDtoList = Lists.newArrayList();
-        for (ExchangeForCurrency exchangeForCurrency : exchangeForCurrencies) {
-            tickerDtoList.add(getTicker(exchangeForCurrency));
+        for (SelectedExchangeCurrencyPair selectedExchangeCurrencyPair : selectedExchangeCurrencyPairs) {
+            for (CurrencyPair currencyPair : selectedExchangeCurrencyPair.getCurrencyPairList()) {
+                TickerDto ticker = getTicker(selectedExchangeCurrencyPair.getExchangeName(), currencyPair);
+                if (ticker != null) {
+                    tickerDtoList.add(ticker);
+                }
+            }
         }
         return tickerDtoList;
     }

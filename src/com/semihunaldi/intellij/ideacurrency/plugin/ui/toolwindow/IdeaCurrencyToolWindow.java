@@ -8,8 +8,10 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
+import com.semihunaldi.intellij.ideacurrency.plugin.IdeaCurrencyApp;
+import com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig;
+import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.TickerDto;
-import com.semihunaldi.intellij.ideacurrency.plugin.Util;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -18,6 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by semihunaldi on 29/11/2017
@@ -36,7 +39,8 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
         reloadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<TickerDto> data = getData();
+                Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = IdeaCurrencyConfig.getInstance().getSelectedExchangeCurrencyPairs();
+                List<TickerDto> data = IdeaCurrencyApp.getInstance().getTickers(selectedExchangeCurrencyPairs);
                 fillData(data);
             }
         });
@@ -46,21 +50,11 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        List<TickerDto> data = getData();
+        Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = IdeaCurrencyConfig.getInstance().getSelectedExchangeCurrencyPairs();
+        List<TickerDto> data = IdeaCurrencyApp.getInstance().getTickers(selectedExchangeCurrencyPairs);
         fillData(data);
         Content content = contentFactory.createContent(contentPane, "", false);
         toolWindow.getContentManager().addContent(content);
-    }
-
-    private List<TickerDto> getData() {
-        TickerDto tickerDto = Util.getSampleTicker();
-        List<TickerDto> tickers = Lists.newArrayList();
-        if (tickerDto != null) {
-            for (int i = 0 ; i < 15 ; i++) {
-                tickers.add(tickerDto);
-            }
-        }
-        return tickers;
     }
 
     private DefaultTableModel prepareTableHeader() {
@@ -76,7 +70,9 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     }
 
     private void fillData(List<TickerDto> tickers) {
-        //TODO clear rows
+        for (int i = 0 ; i < table.getRowCount() ; i++) { //TODO not working
+            table.remove(i);
+        }
         for (TickerDto tickerDto : tickers) {
             List<String> columns = Lists.newArrayList();
             columns.add(tickerDto.getExchangeName());
@@ -85,6 +81,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
             columns.add(tickerDto.getTicker().getCurrencyPair().toString());
             defaultTableModel.addRow(columns.toArray());
         }
+        table.repaint();
     }
 
     private void createUIComponents() {
