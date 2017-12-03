@@ -69,7 +69,7 @@ public class IdeaCurrencyApp {
         try {
             return new TickerDto(exchange.getExchangeSpecification().getExchangeName(), marketDataService.getTicker(pair));
         } catch (Exception e) {
-            return null;
+            return new TickerDto(true, exchangeName, pair);
         }
     }
 
@@ -78,9 +78,7 @@ public class IdeaCurrencyApp {
         for (SelectedExchangeCurrencyPair selectedExchangeCurrencyPair : selectedExchangeCurrencyPairs) {
             for (CurrencyPair currencyPair : selectedExchangeCurrencyPair.getCurrencyPairList()) {
                 TickerDto ticker = getTicker(selectedExchangeCurrencyPair.getExchangeName(), currencyPair);
-                if (ticker != null) {
-                    tickerDtoList.add(ticker);
-                }
+                tickerDtoList.add(ticker);
             }
         }
         return tickerDtoList;

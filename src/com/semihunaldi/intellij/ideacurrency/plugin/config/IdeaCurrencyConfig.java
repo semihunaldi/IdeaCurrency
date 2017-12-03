@@ -20,14 +20,24 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.RELOAD_INTERVAL_MAX;
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.RELOAD_INTERVAL_MIN;
+
 @State(name = "IdeaCurrencyConfig", storages = @Storage(file = "idea_currency_plugin_settings.xml"))
 public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrencyConfig> {
 
     @Transient
     public Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = Sets.newHashSet();
 
+    //in seconds
+    @Property
+    public Integer reloadInterval = 15;
+
     @Property
     public Map<String, String> currencyPairByExchangeMap = Maps.newHashMap();
+
+    @Property
+    public boolean active = true;
 
     public IdeaCurrencyConfig() {
     }
@@ -47,6 +57,7 @@ public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrency
             Set<CurrencyPair> currencyPairSet = Lists.newArrayList(split).stream().map(CurrencyPair::new).collect(Collectors.toSet());
             selectedExchangeCurrencyPairs.add(new SelectedExchangeCurrencyPair(exchangeName, currencyPairSet));
         }
+        checkAndOptimizeReloadInterval(ideaCurrencyConfig.getReloadInterval());
     }
 
     @Transient
@@ -68,6 +79,18 @@ public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrency
         }
     }
 
+    private void checkAndOptimizeReloadInterval(Integer value) {
+        if (reloadInterval == null) {
+            reloadInterval = RELOAD_INTERVAL_MIN;
+        }
+        if (value < RELOAD_INTERVAL_MIN) {
+            reloadInterval = RELOAD_INTERVAL_MIN;
+        }
+        if (value > RELOAD_INTERVAL_MAX) {
+            reloadInterval = RELOAD_INTERVAL_MAX;
+        }
+    }
+
     public static IdeaCurrencyConfig getInstance() {
         return ServiceManager.getService(IdeaCurrencyConfig.class);
     }
@@ -79,5 +102,22 @@ public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrency
 
     public void setCurrencyPairByExchangeMap(Map<String, String> currencyPairByExchangeMap) {
         this.currencyPairByExchangeMap = currencyPairByExchangeMap;
+    }
+
+    public Integer getReloadInterval() {
+        return reloadInterval;
+    }
+
+    public void setReloadInterval(Integer reloadInterval) {
+        this.reloadInterval = reloadInterval;
+        checkAndOptimizeReloadInterval(reloadInterval);
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

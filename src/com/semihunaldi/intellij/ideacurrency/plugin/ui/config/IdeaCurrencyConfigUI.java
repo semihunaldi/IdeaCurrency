@@ -1,15 +1,21 @@
 package com.semihunaldi.intellij.ideacurrency.plugin.ui.config;
 
 import com.google.common.collect.Sets;
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckboxTreeAdapter;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.TreeSpeedSearch;
+import com.intellij.util.messages.MessageBus;
 import com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants;
 import com.semihunaldi.intellij.ideacurrency.plugin.IdeaCurrencyApp;
 import com.semihunaldi.intellij.ideacurrency.plugin.Util;
+import com.semihunaldi.intellij.ideacurrency.plugin.config.ConfigChangeNotifier;
 import com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import org.jetbrains.annotations.Nls;
@@ -25,12 +31,18 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Set;
 
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.RELOAD_INTERVAL_MAX;
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.RELOAD_INTERVAL_MIN;
+
 /**
  * Created by semihunaldi on 01/12/2017
  */
 public class IdeaCurrencyConfigUI implements Configurable {
     private JPanel jPanel;
     private CheckboxTree tree;
+    private JSlider reloadIntervalSlider;
+    private JCheckBox activeCheckBox;
+    private JLabel sliderLabel;
     private Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs;
     private Collection<String> availableExchangeNames;
 
@@ -56,6 +68,44 @@ public class IdeaCurrencyConfigUI implements Configurable {
         model.reload();
         tree.treeDidChange();
         Util.expandAll(tree, new TreePath(root), true);
+    }
+
+    private void prepareReloadIntervalSlider() {
+        reloadIntervalSlider = new JSlider();
+        sliderLabel = new JLabel();
+        Integer reloadInterval = IdeaCurrencyConfig.getInstance().getReloadInterval();
+        reloadIntervalSlider.setValue(reloadInterval);
+        reloadIntervalSlider.setMinimum(RELOAD_INTERVAL_MIN);
+        int value = reloadIntervalSlider.getValue();
+        if (value < RELOAD_INTERVAL_MIN) {
+            reloadIntervalSlider.setValue(RELOAD_INTERVAL_MIN);
+        }
+        if (value > RELOAD_INTERVAL_MAX) {
+            reloadIntervalSlider.setValue(RELOAD_INTERVAL_MAX);
+        }
+        sliderLabel.setText(String.valueOf(reloadIntervalSlider.getValue()));
+        reloadIntervalSlider.addChangeListener(e -> {
+            isModified = true;
+            sliderLabel.setText(String.valueOf(reloadIntervalSlider.getValue()));
+        });
+    }
+
+    private void prepareActiveCheckbox() {
+        activeCheckBox = new JCheckBox();
+        boolean active = IdeaCurrencyConfig.getInstance().getActive();
+        activeCheckBox.setSelected(active);
+        activeCheckBox.addChangeListener(e -> isModified = true);
+    }
+
+    private void triggerConfigChange() {
+        DataContext dataContext = DataManager.getInstance().getDataContextFromFocus().getResult();
+        Project project = DataKeys.PROJECT.getData(dataContext);
+        if (project != null) {
+            MessageBus messageBus = project.getMessageBus();
+            messageBus.connect();
+            ConfigChangeNotifier configChangeNotifier = messageBus.syncPublisher(ConfigChangeNotifier.CONFIG_TOPIC);
+            configChangeNotifier.configChanged(activeCheckBox.isSelected());
+        }
     }
 
     private boolean isSelected(String exchangeName, CurrencyPair currencyPair) {
@@ -104,7 +154,10 @@ public class IdeaCurrencyConfigUI implements Configurable {
             selectedExchangeCurrencyPairs.add(selectedExchangeCurrencyPair);
         }
         IdeaCurrencyConfig.getInstance().setSelectedExchangeCurrencyPairs(selectedExchangeCurrencyPairs);
+        IdeaCurrencyConfig.getInstance().setReloadInterval(reloadIntervalSlider.getValue());
+        IdeaCurrencyConfig.getInstance().setActive(activeCheckBox.isSelected());
         isModified = false;
+        triggerConfigChange();
     }
 
     private void createUIComponents() {
@@ -129,10 +182,11 @@ public class IdeaCurrencyConfigUI implements Configurable {
             }
         });
         init();
+        prepareReloadIntervalSlider();
+        prepareActiveCheckbox();
     }
 
     private SelectedExchangeCurrencyPair getExchangePair(String exchangeName) {
-        SelectedExchangeCurrencyPair selectedExchangeCurrencyPair = selectedExchangeCurrencyPairs.stream().filter(secp -> secp.getExchangeName().equals(exchangeName)).findAny().orElse(null);
-        return selectedExchangeCurrencyPair;
+        return selectedExchangeCurrencyPairs.stream().filter(secp -> secp.getExchangeName().equals(exchangeName)).findAny().orElse(null);
     }
 }

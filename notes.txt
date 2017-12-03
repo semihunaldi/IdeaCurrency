@@ -1,0 +1,4 @@
+
+// a way to access current project
+DataContext dataContext = DataManager.getInstance().getDataContextFromFocus().getResult();
+Project project = DataKeys.PROJECT.getData(dataContext);

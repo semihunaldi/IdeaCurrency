@@ -13,6 +13,10 @@ import java.util.List;
  * Created by semihunaldi on 01/12/2017
  */
 public class ApplicationConstants {
+
+    public static final Integer RELOAD_INTERVAL_MIN = 3;
+    public static final Integer RELOAD_INTERVAL_MAX = 360;
+
     public static final String APP_NAME = "Idea Currency Plugin";
     public static final String APP_ERROR_ID = "IdeaCurrencyError";
 

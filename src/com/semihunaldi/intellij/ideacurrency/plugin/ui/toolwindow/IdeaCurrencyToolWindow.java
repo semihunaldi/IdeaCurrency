@@ -10,7 +10,10 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusConnection;
 import com.semihunaldi.intellij.ideacurrency.plugin.IdeaCurrencyApp;
+import com.semihunaldi.intellij.ideacurrency.plugin.config.ConfigChangeNotifier;
 import com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.TickerDto;
@@ -34,9 +37,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by semihunaldi on 29/11/2017
  */
-@SuppressWarnings("Duplicates")
 public class IdeaCurrencyToolWindow implements ToolWindowFactory {
-    private static final int DEFAULT_DELAY_SECONDS = 15;
     private final Logger LOG = Logger.getInstance(getClass());
     private ScheduledExecutorService myExecutor;
     private final List<ScheduledFuture<?>> myScheduledTasks = new LinkedList<>();
@@ -44,8 +45,10 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     private JPanel contentPane;
     private JButton reloadButton;
     private JBTable table;
+    private JLabel lastUpdated;
     private DefaultTableModel defaultTableModel;
-    private Date lastUpdatedDate;
+
+    private MessageBusConnection messageBusConnection;
 
     @Override
     public void init(ToolWindow window) {
@@ -55,12 +58,11 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
         reloadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = IdeaCurrencyConfig.getInstance().getSelectedExchangeCurrencyPairs();
-                List<TickerDto> data = IdeaCurrencyApp.getInstance().getTickers(selectedExchangeCurrencyPairs);
-                fillData(data);
+                scheduleTask(IdeaCurrencyConfig.getInstance().getReloadInterval());
             }
         });
         contentPane.setBackground(JBColor.LIGHT_GRAY);
+        table.getEmptyText().setText("Please select Currency Pairs to watch from plugin settings");
         scheduleNextTask();
     }
 
@@ -68,10 +70,20 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Set<SelectedExchangeCurrencyPair> selectedExchangeCurrencyPairs = IdeaCurrencyConfig.getInstance().getSelectedExchangeCurrencyPairs();
-        List<TickerDto> data = IdeaCurrencyApp.getInstance().getTickers(selectedExchangeCurrencyPairs);
-        fillData(data);
+        if (IdeaCurrencyConfig.getInstance().getActive()) {
+            List<TickerDto> data = IdeaCurrencyApp.getInstance().getTickers(selectedExchangeCurrencyPairs);
+            fillData(data);
+        }
         Content content = contentFactory.createContent(contentPane, "", false);
         toolWindow.getContentManager().addContent(content);
+
+        MessageBus messageBus = project.getMessageBus();
+        messageBusConnection = messageBus.connect();
+        messageBusConnection.subscribe(ConfigChangeNotifier.CONFIG_TOPIC, active -> {
+            if (active) {
+                scheduleNextTask();
+            }
+        });
     }
 
     private DefaultTableModel prepareTableHeader() {
@@ -87,15 +99,22 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     }
 
     private void fillData(List<TickerDto> tickers) {
-        lastUpdatedDate = new Date();
+        lastUpdated.setText(new Date().toString());
         defaultTableModel.getDataVector().removeAllElements();
         defaultTableModel.fireTableDataChanged();
         for (TickerDto tickerDto : tickers) {
             List<String> columns = Lists.newArrayList();
-            columns.add(tickerDto.getExchangeName());
-            columns.add(tickerDto.getTicker().getBid().toPlainString());
-            columns.add(tickerDto.getTicker().getAsk().toPlainString());
-            columns.add(tickerDto.getTicker().getCurrencyPair().toString());
+            if (tickerDto.isFailed()) {
+                columns.add(tickerDto.getExchangeName());
+                columns.add("-");
+                columns.add("-");
+                columns.add(tickerDto.getPair().toString());
+            } else {
+                columns.add(tickerDto.getExchangeName());
+                columns.add(tickerDto.getTicker().getBid().toPlainString());
+                columns.add(tickerDto.getTicker().getAsk().toPlainString());
+                columns.add(tickerDto.getTicker().getCurrencyPair().toString());
+            }
             defaultTableModel.addRow(columns.toArray());
         }
     }
@@ -107,11 +126,11 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
             public Component prepareRenderer(@NotNull TableCellRenderer renderer, int row, int col) {
                 Component comp = super.prepareRenderer(renderer, row, col);
                 if (col == 1) {
-                    comp.setForeground(JBColor.GREEN);
-                    comp.setBackground(JBColor.BLACK);
+                    comp.setForeground(JBColor.BLACK);
+                    comp.setBackground(JBColor.GREEN);
                 } else if (col == 2) {
-                    comp.setForeground(JBColor.RED);
-                    comp.setBackground(JBColor.BLACK);
+                    comp.setForeground(JBColor.BLACK);
+                    comp.setBackground(JBColor.RED);
                 } else {
                     comp.setForeground(JBColor.BLACK);
                     comp.setBackground(JBColor.WHITE);
@@ -139,9 +158,11 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
         }
     }
 
-    void scheduleNextTask() {
-        synchronized (this) {
-            scheduleTask(DEFAULT_DELAY_SECONDS);
+    public void scheduleNextTask() {
+        if (IdeaCurrencyConfig.getInstance().getActive()) {
+            synchronized (this) {
+                scheduleTask(IdeaCurrencyConfig.getInstance().getReloadInterval());
+            }
         }
     }
 }
