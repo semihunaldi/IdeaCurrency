@@ -18,7 +18,6 @@ import org.knowm.xchange.currency.CurrencyPair;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @State(name = "IdeaCurrencyConfig", storages = @Storage(file = "idea_currency_plugin_settings.xml"))
@@ -45,12 +44,7 @@ public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrency
         for (String exchangeName : ideaCurrencyConfig.currencyPairByExchangeMap.keySet()) {
             String currencyPairs = currencyPairByExchangeMap.get(exchangeName);
             String[] split = currencyPairs.split(",");
-            Set<CurrencyPair> currencyPairSet = Lists.newArrayList(split).stream().map((Function<String, CurrencyPair>) s -> {
-                if(StringUtils.isNotBlank(s)) {
-                    new CurrencyPair(s);
-                }
-                return null;
-            }).collect(Collectors.toSet());
+            Set<CurrencyPair> currencyPairSet = Lists.newArrayList(split).stream().map(CurrencyPair::new).collect(Collectors.toSet());
             selectedExchangeCurrencyPairs.add(new SelectedExchangeCurrencyPair(exchangeName, currencyPairSet));
         }
     }
@@ -68,7 +62,9 @@ public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrency
             for (CurrencyPair currencyPair : selectedExchangeCurrencyPair.getCurrencyPairList()) {
                 stringJoiner.add(currencyPair.toString());
             }
-            currencyPairByExchangeMap.put(selectedExchangeCurrencyPair.getExchangeName(), stringJoiner.toString());
+            if (StringUtils.isNotBlank(stringJoiner.toString())) {
+                currencyPairByExchangeMap.put(selectedExchangeCurrencyPair.getExchangeName(), stringJoiner.toString());
+            }
         }
     }
 

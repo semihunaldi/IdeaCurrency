@@ -1,6 +1,8 @@
 package com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow;
 
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -12,6 +14,7 @@ import com.semihunaldi.intellij.ideacurrency.plugin.IdeaCurrencyApp;
 import com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.TickerDto;
+import com.semihunaldi.intellij.ideacurrency.plugin.service.DataFetchTask;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -19,22 +22,35 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by semihunaldi on 29/11/2017
  */
 @SuppressWarnings("Duplicates")
 public class IdeaCurrencyToolWindow implements ToolWindowFactory {
+    private static final int DEFAULT_DELAY_SECONDS = 15;
+    private final Logger LOG = Logger.getInstance(getClass());
+    private ScheduledExecutorService myExecutor;
+    private final List<ScheduledFuture<?>> myScheduledTasks = new LinkedList<>();
+
     private JPanel contentPane;
     private JButton reloadButton;
     private JBTable table;
-
     private DefaultTableModel defaultTableModel;
+    private Date lastUpdatedDate;
 
     @Override
     public void init(ToolWindow window) {
+        myExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("DataFetch-%s").build());
+        table.setDragEnabled(false);
         defaultTableModel = prepareTableHeader();
         reloadButton.addActionListener(new AbstractAction() {
             @Override
@@ -45,6 +61,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
             }
         });
         contentPane.setBackground(JBColor.LIGHT_GRAY);
+        scheduleNextTask();
     }
 
     @Override
@@ -70,9 +87,9 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     }
 
     private void fillData(List<TickerDto> tickers) {
-        for (int i = 0 ; i < table.getRowCount() ; i++) { //TODO not working
-            table.remove(i);
-        }
+        lastUpdatedDate = new Date();
+        defaultTableModel.getDataVector().removeAllElements();
+        defaultTableModel.fireTableDataChanged();
         for (TickerDto tickerDto : tickers) {
             List<String> columns = Lists.newArrayList();
             columns.add(tickerDto.getExchangeName());
@@ -81,7 +98,6 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
             columns.add(tickerDto.getTicker().getCurrencyPair().toString());
             defaultTableModel.addRow(columns.toArray());
         }
-        table.repaint();
     }
 
     private void createUIComponents() {
@@ -103,5 +119,29 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
                 return comp;
             }
         };
+    }
+
+    private void scheduleTask(int delaySeconds) {
+        synchronized (this) {
+            if (cleanAndCheckTasks()) {
+                LOG.debug("Scheduling data fetch in ", delaySeconds, "  seconds");
+                myScheduledTasks.add(myExecutor.schedule(DataFetchTask.create(this::scheduleNextTask, this::fillData), delaySeconds, TimeUnit.SECONDS));
+            } else {
+                LOG.debug("Tasks already scheduled");
+            }
+        }
+    }
+
+    private boolean cleanAndCheckTasks() {
+        synchronized (this) {
+            myScheduledTasks.removeIf(task -> task.isCancelled() || task.isDone());
+            return myScheduledTasks.isEmpty();
+        }
+    }
+
+    void scheduleNextTask() {
+        synchronized (this) {
+            scheduleTask(DEFAULT_DELAY_SECONDS);
+        }
     }
 }

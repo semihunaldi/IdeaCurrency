@@ -1,6 +1,5 @@
 package com.semihunaldi.intellij.ideacurrency.plugin.ui.config;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -10,6 +9,7 @@ import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.TreeSpeedSearch;
 import com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants;
 import com.semihunaldi.intellij.ideacurrency.plugin.IdeaCurrencyApp;
+import com.semihunaldi.intellij.ideacurrency.plugin.Util;
 import com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig;
 import com.semihunaldi.intellij.ideacurrency.plugin.model.SelectedExchangeCurrencyPair;
 import org.jetbrains.annotations.Nls;
@@ -55,6 +55,7 @@ public class IdeaCurrencyConfigUI implements Configurable {
         }
         model.reload();
         tree.treeDidChange();
+        Util.expandAll(tree, new TreePath(root), true);
     }
 
     private boolean isSelected(String exchangeName, CurrencyPair currencyPair) {
@@ -89,13 +90,13 @@ public class IdeaCurrencyConfigUI implements Configurable {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
         Enumeration rootEnum = root.children();
         while (rootEnum.hasMoreElements()) {
-            DefaultMutableTreeNode rootEnumObject = (DefaultMutableTreeNode)rootEnum.nextElement();
+            DefaultMutableTreeNode rootEnumObject = (DefaultMutableTreeNode) rootEnum.nextElement();
             String exchangeName = rootEnumObject.getUserObject().toString();
             Enumeration childEnum = rootEnumObject.children();
             Set<CurrencyPair> currencyPairs = Sets.newHashSet();
             while (childEnum.hasMoreElements()) {
-                CheckedTreeNode childEnumObject = (CheckedTreeNode)childEnum.nextElement();
-                if(childEnumObject.isChecked()) {
+                CheckedTreeNode childEnumObject = (CheckedTreeNode) childEnum.nextElement();
+                if (childEnumObject.isChecked()) {
                     currencyPairs.add(new CurrencyPair(childEnumObject.getUserObject().toString()));
                 }
             }
