@@ -9,7 +9,6 @@ __**Implemented Markets:**__
 * Bitstamp
 * Coinbase
 * CoinMarketCap
-* Coinbase
 
 
 
