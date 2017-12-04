@@ -5,6 +5,9 @@
 
 <a href="https://blockchain.info/address/1CG9jggoafsjdrzUZFQxxkScdMDDiutqtr">Donate Bitcoin</a>
 
+
+![Screenshot](https://raw.githubusercontent.com/semihunaldi/IdeaCurrency/master/images/Screen%20Shot%202017-12-04%20at%2015.01.06.png)
+
 __**Implemented Markets:**__
 * BTCTurk
 * Paribu
