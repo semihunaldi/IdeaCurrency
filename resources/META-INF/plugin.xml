@@ -5,7 +5,7 @@
   <vendor email="semihunaldi@gmail.com" url="http://www.semihunaldi.com">Semih Ünaldı</vendor>
 
   <description><![CDATA[
-      Intellij Idea Crypto Currency tracker.<br>
+      Intellij Idea Cryptocurrency tracker.<br>
       <em>Bitcoin, Etherium, Litecoin, Dash, Ripple etc.</em>
       <br><br>
       Implemented Markets:<br>
@@ -15,6 +15,9 @@
       Coinbase<br>
       CoinMarketCap<br>
       Coinbase<br>
+      <br>
+      <a href="https://blockchain.info/address/1CG9jggoafsjdrzUZFQxxkScdMDDiutqtr">Donate Bitcoin</a>
+      <br>
     ]]></description>
 
   <change-notes><![CDATA[
