@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.DEFAULT_CURRENCY_PAIRS;
+
 /**
  * Created by semihunaldi on 01/12/2017
  */
@@ -52,7 +54,11 @@ public class IdeaCurrencyApp {
 
     public Collection<CurrencyPair> getCurrencyPairs(String exchangeName) {
         Exchange exchangeByName = getExchangeByName(exchangeName);
-        return exchangeByName.getExchangeMetaData().getCurrencyPairs().keySet();
+        if (exchangeByName.getExchangeMetaData() != null) {
+            return exchangeByName.getExchangeMetaData().getCurrencyPairs().keySet();
+        } else {
+            return DEFAULT_CURRENCY_PAIRS;
+        }
     }
 
     public Exchange getExchangeByName(String exchangeName) {
@@ -65,8 +71,8 @@ public class IdeaCurrencyApp {
 
     public TickerDto getTicker(String exchangeName, CurrencyPair pair) {
         Exchange exchange = getExchangeByName(exchangeName);
-        MarketDataService marketDataService = exchange.getMarketDataService();
         try {
+            MarketDataService marketDataService = exchange.getMarketDataService();
             return new TickerDto(exchange.getExchangeSpecification().getExchangeName(), marketDataService.getTicker(pair));
         } catch (Exception e) {
             return new TickerDto(true, exchangeName, pair);

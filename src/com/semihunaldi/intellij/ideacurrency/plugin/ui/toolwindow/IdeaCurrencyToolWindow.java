@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,8 +112,8 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
                 columns.add(tickerDto.getPair().toString());
             } else {
                 columns.add(tickerDto.getExchangeName());
-                columns.add(tickerDto.getTicker().getBid().toPlainString());
-                columns.add(tickerDto.getTicker().getAsk().toPlainString());
+                columns.add(tickerDto.getTicker().getBid().setScale(6, BigDecimal.ROUND_DOWN).toPlainString());
+                columns.add(tickerDto.getTicker().getAsk().setScale(6, BigDecimal.ROUND_DOWN).toPlainString());
                 columns.add(tickerDto.getTicker().getCurrencyPair().toString());
             }
             defaultTableModel.addRow(columns.toArray());
