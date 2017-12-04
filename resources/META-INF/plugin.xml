@@ -1,31 +1,28 @@
 <idea-plugin>
   <id>com.semihunaldi.intellij.ideacurrency.plugin</id>
   <name>Idea Currency</name>
-  <version>1.0</version>
+  <version>0.1.0</version>
   <vendor email="semihunaldi@gmail.com" url="http://www.semihunaldi.com">Semih Ünaldı</vendor>
 
   <description><![CDATA[
       Intellij Idea Crypto Currency tracker.<br>
-      <em>Bitcoin, Etherium, etc.</em>
+      <em>Bitcoin, Etherium, Litecoin, Dash, Ripple etc.</em>
       <br><br>
       Implemented Markets:<br>
-
+      BTCTurk<br>
+      Paribu<br>
+      Bitstamp<br>
+      Coinbase<br>
+      CoinMarketCap<br>
+      Coinbase<br>
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
     ]]>
   </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="145.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
 
   <extensions defaultExtensionNs="com.intellij">
     <applicationService serviceInterface="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig" serviceImplementation="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig"/>
@@ -34,12 +31,5 @@
   </extensions>
 
   <actions>
-    <!-- Add your actions here -->
   </actions>
-
-  <!--<application-components>-->
-    <!--<component>-->
-      <!--<implementation-class>com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow.asd</implementation-class>-->
-    <!--</component>-->
-  <!--</application-components>-->
 </idea-plugin>
