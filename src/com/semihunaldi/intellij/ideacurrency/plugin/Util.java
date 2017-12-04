@@ -27,13 +27,11 @@ public class Util {
         try {
             return new TickerDto(bitstamp.getExchangeSpecification().getExchangeName(), marketDataService.getTicker(CurrencyPair.BTC_USD));
         } catch (IOException e) {
-            //TODO return null
             return new TickerDto(bitstamp.getExchangeSpecification().getExchangeName(), new Ticker.Builder().currencyPair(CurrencyPair.BTC_USD).ask(new BigDecimal("123")).bid(new BigDecimal("4253")).build());
         }
     }
 
     public static void expandAll(Tree tree, TreePath parent, boolean expand) {
-        // Traverse children
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
             for (Enumeration e = node.children() ; e.hasMoreElements() ; ) {
@@ -42,8 +40,6 @@ public class Util {
                 expandAll(tree, path, expand);
             }
         }
-
-        // Expansion or collapse must be done bottom-up
         if (expand) {
             tree.expandPath(parent);
         } else {

@@ -1,3 +1,4 @@
+useful:
 
 // a way to access current project
 DataContext dataContext = DataManager.getInstance().getDataContextFromFocus().getResult();
