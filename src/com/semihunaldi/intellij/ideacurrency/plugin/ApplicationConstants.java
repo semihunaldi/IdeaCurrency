@@ -30,7 +30,7 @@ public class ApplicationConstants {
     public static final String APP_NAME = "Idea Currency Plugin";
     public static final String APP_ERROR_ID = "IdeaCurrencyError";
 
-    public static final List<Class<? extends Exchange>> exchangeClasses = Lists.newArrayList(BTCTurkExchange.class, ParibuExchange.class, BitstampExchange.class, CoinbaseExchange.class, CoinMarketCapExchange.class, CoinbaseExchange.class);
+    public static final List<Class<? extends Exchange>> exchangeClasses = Lists.newArrayList(BTCTurkExchange.class, ParibuExchange.class, BitstampExchange.class, CoinbaseExchange.class, CoinMarketCapExchange.class);
 
     public static final List<CurrencyPair> DEFAULT_CURRENCY_PAIRS = Lists.newArrayList(CurrencyPair.BTC_USD, CurrencyPair.ETH_USD, LTC_USD, DOGE_USD, DASH_USD, XRP_USD, IOTA_USD, BCC_USD, XMR_BTC);
 }
