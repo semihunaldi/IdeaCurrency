@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.JBColor;
@@ -85,6 +86,8 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
                 scheduleNextTask();
             }
         });
+        Icon img = IconLoader.getIcon("/META-INF/logo.png");
+        toolWindow.setIcon(img);
     }
 
     private DefaultTableModel prepareTableHeader() {
