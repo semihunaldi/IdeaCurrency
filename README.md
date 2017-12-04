@@ -10,5 +10,10 @@ __**Implemented Markets:**__
 * Coinbase
 * CoinMarketCap
 
+<br>
+<br>
 
-
+__**TODO's**__:
+* Convert to gradle project.
+* BUG: While multiple projects are open, IdeaCurrencyToolWindow only rendered in one project.
+* Support more Exchanges
