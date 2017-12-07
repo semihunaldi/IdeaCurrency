@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.JBColor;
@@ -23,8 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -86,8 +83,6 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
                 scheduleNextTask();
             }
         });
-        Icon img = IconLoader.getIcon("/META-INF/logo.png");
-        toolWindow.setIcon(img);
     }
 
     private DefaultTableModel prepareTableHeader() {
@@ -124,24 +119,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
     }
 
     private void createUIComponents() {
-        table = new JBTable() {
-            @NotNull
-            @Override
-            public Component prepareRenderer(@NotNull TableCellRenderer renderer, int row, int col) {
-                Component comp = super.prepareRenderer(renderer, row, col);
-                if (col == 1) {
-                    comp.setForeground(JBColor.BLACK);
-                    comp.setBackground(JBColor.GREEN);
-                } else if (col == 2) {
-                    comp.setForeground(JBColor.BLACK);
-                    comp.setBackground(JBColor.RED);
-                } else {
-                    comp.setForeground(JBColor.BLACK);
-                    comp.setBackground(JBColor.WHITE);
-                }
-                return comp;
-            }
-        };
+        table = new JBTable();
     }
 
     private void scheduleTask(int delaySeconds) {

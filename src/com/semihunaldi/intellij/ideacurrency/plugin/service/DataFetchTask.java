@@ -31,7 +31,7 @@ public class DataFetchTask implements Runnable {
 
     @Override
     public void run() {
-        Task.Backgroundable backgroundable = new Task.Backgroundable(null, APP_NAME, false) {
+        Task.Backgroundable backgroundable = new Task.Backgroundable(null, APP_NAME, true) {
             @Override
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 fetch();

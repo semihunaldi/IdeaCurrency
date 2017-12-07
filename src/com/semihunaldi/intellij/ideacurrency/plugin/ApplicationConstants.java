@@ -2,11 +2,16 @@ package com.semihunaldi.intellij.ideacurrency.plugin;
 
 import com.google.common.collect.Lists;
 import org.knowm.xchange.Exchange;
+import org.knowm.xchange.binance.BinanceExchange;
+import org.knowm.xchange.bitfinex.v1.BitfinexExchange;
 import org.knowm.xchange.bitstamp.BitstampExchange;
 import org.knowm.xchange.btcturk.BTCTurkExchange;
+import org.knowm.xchange.cexio.CexIOExchange;
 import org.knowm.xchange.coinbase.CoinbaseExchange;
 import org.knowm.xchange.coinmarketcap.CoinMarketCapExchange;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.koineks.KoineksExchange;
+import org.knowm.xchange.liqui.LiquiExchange;
 import org.knowm.xchange.paribu.ParibuExchange;
 
 import java.util.List;
@@ -30,7 +35,10 @@ public class ApplicationConstants {
     public static final String APP_NAME = "Idea Currency Plugin";
     public static final String APP_ERROR_ID = "IdeaCurrencyError";
 
-    public static final List<Class<? extends Exchange>> exchangeClasses = Lists.newArrayList(BTCTurkExchange.class, ParibuExchange.class, BitstampExchange.class, CoinbaseExchange.class, CoinMarketCapExchange.class);
+    public static final List<Class<? extends Exchange>> exchangeClasses = Lists.newArrayList(
+            BTCTurkExchange.class, ParibuExchange.class, BitstampExchange.class,
+            CoinbaseExchange.class, CoinMarketCapExchange.class, LiquiExchange.class,
+            BinanceExchange.class, BitfinexExchange.class, CexIOExchange.class, KoineksExchange.class);
 
     public static final List<CurrencyPair> DEFAULT_CURRENCY_PAIRS = Lists.newArrayList(CurrencyPair.BTC_USD, CurrencyPair.ETH_USD, LTC_USD, DOGE_USD, DASH_USD, XRP_USD, IOTA_USD, BCC_USD, XMR_BTC);
 }

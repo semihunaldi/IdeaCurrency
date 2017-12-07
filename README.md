@@ -14,7 +14,11 @@ __**Implemented Markets:**__
 * Bitstamp
 * Coinbase
 * CoinMarketCap
-
+* Cex.io
+* Koineks
+* Liqui
+* Binance
+* Bitfinex
 <br>
 <br>
 
