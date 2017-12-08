@@ -33,6 +33,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.TABLE_COLUMN_IDENTIFIERS;
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.TABLE_EMPTY_TEXT;
+
 /**
  * Created by semihunaldi on 29/11/2017
  */
@@ -61,7 +64,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
             }
         });
         contentPane.setBackground(JBColor.LIGHT_GRAY);
-        table.getEmptyText().setText("Please select Currency Pairs to watch from plugin settings");
+        table.getEmptyText().setText(TABLE_EMPTY_TEXT);
         scheduleNextTask();
     }
 
@@ -92,7 +95,7 @@ public class IdeaCurrencyToolWindow implements ToolWindowFactory {
                 return false;
             }
         };
-        defaultTableModel.setColumnIdentifiers(new Object[]{"Market", "Bid", "Ask", "Currency"});
+        defaultTableModel.setColumnIdentifiers(TABLE_COLUMN_IDENTIFIERS);
         table.setModel(defaultTableModel);
         return defaultTableModel;
     }

@@ -20,10 +20,12 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.CONFIG_STATE_NAME;
 import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.RELOAD_INTERVAL_MAX;
 import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.RELOAD_INTERVAL_MIN;
+import static com.semihunaldi.intellij.ideacurrency.plugin.ApplicationConstants.SETTINGS_XML_NAME;
 
-@State(name = "IdeaCurrencyConfig", storages = @Storage(file = "idea_currency_plugin_settings.xml"))
+@State(name = CONFIG_STATE_NAME, storages = @Storage(file = SETTINGS_XML_NAME))
 public class IdeaCurrencyConfig implements PersistentStateComponent<IdeaCurrencyConfig> {
 
     @Transient
