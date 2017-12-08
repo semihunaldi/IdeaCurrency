@@ -11,6 +11,7 @@ import org.knowm.xchange.coinbase.CoinbaseExchange;
 import org.knowm.xchange.coinmarketcap.CoinMarketCapExchange;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.koineks.KoineksExchange;
+import org.knowm.xchange.koinim.KoinimExchange;
 import org.knowm.xchange.liqui.LiquiExchange;
 import org.knowm.xchange.paribu.ParibuExchange;
 
@@ -33,12 +34,11 @@ public class ApplicationConstants {
     public static final Integer RELOAD_INTERVAL_MAX = 360;
 
     public static final String APP_NAME = "Idea Currency Plugin";
-    public static final String APP_ERROR_ID = "IdeaCurrencyError";
 
     public static final List<Class<? extends Exchange>> exchangeClasses = Lists.newArrayList(
             BTCTurkExchange.class, ParibuExchange.class, BitstampExchange.class,
             CoinbaseExchange.class, CoinMarketCapExchange.class, LiquiExchange.class,
-            BinanceExchange.class, BitfinexExchange.class, CexIOExchange.class, KoineksExchange.class);
+            BinanceExchange.class, BitfinexExchange.class, CexIOExchange.class, KoineksExchange.class, KoinimExchange.class);
 
     public static final List<CurrencyPair> DEFAULT_CURRENCY_PAIRS = Lists.newArrayList(CurrencyPair.BTC_USD, CurrencyPair.ETH_USD, LTC_USD, DOGE_USD, DASH_USD, XRP_USD, IOTA_USD, BCC_USD, XMR_BTC);
 }

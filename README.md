@@ -11,11 +11,12 @@
 __**Implemented Markets:**__
 * BTCTurk
 * Paribu
+* Koineks
+* Koinim
 * Bitstamp
 * Coinbase
 * CoinMarketCap
 * Cex.io
-* Koineks
 * Liqui
 * Binance
 * Bitfinex

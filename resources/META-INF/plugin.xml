@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.semihunaldi.intellij.ideacurrency.plugin</id>
   <name>Idea Currency</name>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <vendor email="semihunaldi@gmail.com" url="http://www.semihunaldi.com">Semih Ünaldı</vendor>
 
   <description><![CDATA[
@@ -11,11 +11,12 @@
       Implemented Markets:<br>
       BTCTurk<br>
       Paribu<br>
+      Koineks<br>
+      Koinim<br>
       Bitstamp<br>
       Coinbase<br>
       Bittrex<br>
       Cex.io<br>
-      Koineks<br>
       Liqui<br>
       Binance<br>
       Bitfinex<br>
