@@ -1,0 +1,45 @@
+<idea-plugin>
+  <id>com.semihunaldi.intellij.ideacurrency.plugin</id>
+  <name>Idea Currency</name>
+  <version>0.1.2</version>
+  <vendor email="semihunaldi@gmail.com" url="http://www.semihunaldi.com">Semih Unaldi</vendor>
+
+  <description><![CDATA[
+      Intellij Idea Cryptocurrency tracker.<br>
+      <em>Bitcoin, Etherium, Litecoin, Dash, Ripple etc.</em>
+      <br><br>
+      Implemented Markets:<br>
+      BTCTurk<br>
+      Paribu<br>
+      Koineks<br>
+      Koinim<br>
+      Bitstamp<br>
+      Coinbase<br>
+      Bittrex<br>
+      Cex.io<br>
+      Liqui<br>
+      Binance<br>
+      Bitfinex<br>
+      <br>
+      <a href="https://blockchain.info/address/1CG9jggoafsjdrzUZFQxxkScdMDDiutqtr">Donate Bitcoin</a>
+      <br>
+      <a href="https://github.com/semihunaldi/IdeaCurrency">Github</a>
+      <br>
+    ]]></description>
+
+  <change-notes><![CDATA[
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="145.0"/>
+
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig" serviceImplementation="com.semihunaldi.intellij.ideacurrency.plugin.config.IdeaCurrencyConfig"/>
+    <applicationConfigurable instance="com.semihunaldi.intellij.ideacurrency.plugin.ui.config.IdeaCurrencyConfigUI"/>
+    <toolWindow icon="/META-INF/logo.png" anchor="right" id="Idea Currency" secondary="false" factoryClass="com.semihunaldi.intellij.ideacurrency.plugin.ui.toolwindow.IdeaCurrencyToolWindow"/>
+  </extensions>
+
+  <!--<actions>-->
+  <!--</actions>-->
+</idea-plugin>

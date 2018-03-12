@@ -2,3 +2,7 @@
 target
 out
 *.log
+.gradle
+build
+*.iml
+%SystemDrive%
