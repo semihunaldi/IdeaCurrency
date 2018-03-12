@@ -1,0 +1,75 @@
+group 'com.semihunaldi'
+version '0.1.2'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url 'http://dl.bintray.com/jetbrains/intellij-plugin-service'
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.jetbrains:gradle-intellij-plugin:0.1.10"
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+
+intellij {
+    version '2017.2.5'
+    pluginName 'Idea Currency'
+    intellij.updateSinceUntilBuild false //Disables updating since-build attribute in plugin.xml
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+        runtime (group: 'org.slf4j', name: 'slf4j-log4j12',version: '+')
+
+    compile (group: 'org.knowm.xchange', name: 'xchange-core', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-binance', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-bitfinex', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-bitstamp', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-bittrex', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-btcturk', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-cexio', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-coinbase', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-coinmarketcap', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-koineks', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-koinim', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-liqui', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compile (group: 'org.knowm.xchange', name: 'xchange-paribu', version: '4.3.4') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+}
